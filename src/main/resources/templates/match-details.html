@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+    <title th:text="'Mecz ' + ${match.strHomeTeam} + ' vs ' + ${match.strAwayTeam}">Mecz</title>
+</head>
+<body>
+
+<h2 th:text="${match.dateEvent}">DATA</h2>
+<p>
+    <span th:text="${match.strHomeTeam}"></span>
+    &nbsp;vs&nbsp;
+    <span th:text="${match.strAwayTeam}"></span>
+    — <span th:text="${match.intHomeScore}"></span>
+    : <span th:text="${match.intAwayScore}"></span>
+</p>
+
+<h3>Komentarze</h3>
+<ul>
+    <li th:each="c : ${comments}">
+        <b th:text="${c.author}">autor</b>:
+        <span th:text="${c.content}">treść</span>
+    </li>
+</ul>
+
+<h3>Dodaj Komentarz</h3>
+<form th:action="@{/match/{id}/comment(id=${match.id})}" method="post">
+    <input type="text" name="author" placeholder="Twój nick" required/>
+    <br/>
+    <textarea name="content" placeholder="Treść komentarza" required></textarea>
+    <br/>
+    <button type="submit">Dodaj komentarz</button>
+</form>
+
+</body>
+</html>

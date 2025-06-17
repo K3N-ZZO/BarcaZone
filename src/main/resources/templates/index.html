@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="stylesheet" th:href="@{/style.css}"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Barca Zone</title>
+</head>
+<body>
+<h1>Ostatnie mecze FC Barcelony</h1>
+
+<div th:if="${#lists.isEmpty(matches)}">
+  <p>Brak danych o meczach.</p>
+</div>
+
+<ul th:if="${!#lists.isEmpty(matches)}">
+  <li th:each="match : ${matches}">
+    <span th:text="${match.dateEvent}">DATA</span>:
+    <span th:text="${match.strHomeTeam}">DOM</span> vs
+    <span th:text="${match.strAwayTeam}">GOŚĆ</span> —
+    <span th:text="${match.intHomeScore}">0</span> :
+    <span th:text="${match.intAwayScore}">0</span>
+    <a th:href="@{/matchDetails/{id}(id=${match.id})}"
+       class="btn btn-primary btn-sm mb-2">
+      Szczegóły Meczu
+    </a>
+  </li>
+</ul>
+
+</body>
+</html>
