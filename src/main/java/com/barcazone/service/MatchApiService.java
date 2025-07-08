@@ -25,7 +25,6 @@ public class MatchApiService {
     @Transactional
     public List<Event> syncRecentMatches() {
 
-        // pobranie ostatnich meczów
         ApiEventResponse resp = restTemplate
                 .getForObject("https://www.thesportsdb.com/api/v1/json/3/eventslast.php?id=133739",
                         ApiEventResponse.class);
@@ -38,11 +37,37 @@ public class MatchApiService {
 
         for (ApiEventDto dto : resp.getEvents()) {
 
-            // jeśli mecz o tym eventId już jest w bazie – bierzemy istniejący
             Event e = eventRepository.findByEventId(dto.getIdEvent())
                     .orElseGet(Event::new);
 
-            // kopiowanie pól
+            e.setEventId(dto.getIdEvent());
+            e.setDateEvent(dto.getDateEvent());
+            e.setStrHomeTeam(dto.getStrHomeTeam());
+            e.setStrAwayTeam(dto.getStrAwayTeam());
+            e.setIntHomeScore(dto.getIntHomeScore());
+            e.setIntAwayScore(dto.getIntAwayScore());
+
+            result.add(eventRepository.save(e));
+        }
+        return result;
+    }
+
+    @Transactional
+    public List<Event> syncUpcomingMatches() {
+
+        ApiEventResponse resp = restTemplate.getForObject(
+                "https://www.thesportsdb.com/api/v1/json/3/eventsnext.php?id=133739",
+                ApiEventResponse.class
+        );
+
+        if (resp == null || resp.getEvents() == null) {
+            return Collections.emptyList();
+        }
+        List<Event> result = new ArrayList<>();
+        for (ApiEventDto dto : resp.getEvents()) {
+
+            Event e = eventRepository.findByEventId(dto.getIdEvent()).orElseGet(Event::new);
+
             e.setEventId(dto.getIdEvent());
             e.setDateEvent(dto.getDateEvent());
             e.setStrHomeTeam(dto.getStrHomeTeam());

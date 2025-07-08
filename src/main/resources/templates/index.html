@@ -1,31 +1,78 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <link rel="stylesheet" th:href="@{/style.css}"/>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Barca Zone</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<h1>Ostatnie mecze FC Barcelony</h1>
+<nav>
+  <div class ="barcaZone">
+    <h3>BarcaZone</h3>
+  </div>
+  <div class="container">
+    <a th:href="@{/}">Home</a>
+    <!-- NIE masz konta -->
+    <div sec:authorize="!isAuthenticated()">
+      <a th:href="@{/login}">Log in</a>
+      <a th:href="@{/register}">Register</a>
+    </div>
+    <!-- Jesteś zalogowany -->
+    <div sec:authorize="isAuthenticated()">
+      Witaj, <b sec:authentication="name"></b>
+      <form th:action="@{/logout}" method="post" style="display:inline">
+        <input type="hidden" th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}"/>
+        <button class="btn btn-primary" type="submit">Wyloguj się</button>
+      </form>
+    </div>
+  </div>
+</nav>
 
-<div th:if="${#lists.isEmpty(matches)}">
-  <p>Brak danych o meczach.</p>
+<!-- NADCHODZĄCE -->
+<div class="container">
+  <h1>Nadchodzące mecze FC Barcelony</h1>
+  <div th:if="${#lists.isEmpty(upcoming)}">
+    <p>Brak nadchodzących meczów.</p>
+  </div>
+  <ul class="match-list" th:if="${!#lists.isEmpty(upcoming)}">
+    <li class="match-card" th:each="m : ${upcoming}">
+      <h4 th:text="${m.dateEvent}">DATA</h4>
+      <p>
+        <span th:text="${m.strHomeTeam}">Home</span> vs
+        <span th:text="${m.strAwayTeam}">Away</span>
+      </p>
+      <a th:href="@{/matchDetails/{id}(id=${m.id})}" class="btn btn-primary">
+        Szczegóły
+      </a>
+    </li>
+  </ul>
 </div>
 
-<ul th:if="${!#lists.isEmpty(matches)}">
-  <li th:each="match : ${matches}">
-    <span th:text="${match.dateEvent}">DATA</span>:
-    <span th:text="${match.strHomeTeam}">DOM</span> vs
-    <span th:text="${match.strAwayTeam}">GOŚĆ</span> —
-    <span th:text="${match.intHomeScore}">0</span> :
-    <span th:text="${match.intAwayScore}">0</span>
-    <a th:href="@{/matchDetails/{id}(id=${match.id})}"
-       class="btn btn-primary btn-sm mb-2">
-      Szczegóły Meczu
-    </a>
-  </li>
-</ul>
-
+<!-- OSTATNIE -->
+<div class="container">
+  <h1>Ostatnie mecze FC Barcelony</h1>
+  <div th:if="${#lists.isEmpty(matches)}">
+    <p>Brak danych o meczach.</p>
+  </div>
+  <ul class="match-list" th:if="${!#lists.isEmpty(matches)}">
+    <li class="match-card" th:each="match : ${matches}">
+      <h4 th:text="${match.dateEvent}">DATA</h4>
+      <p>
+        <span th:text="${match.strHomeTeam}">Home</span> vs
+        <span th:text="${match.strAwayTeam}">Away</span>
+      </p>
+      <p th:text="${match.intHomeScore} + ' : ' + ${match.intAwayScore}">
+        0 : 0
+      </p>
+      <a th:href="@{/matchDetails/{id}(id=${match.id})}"
+         class="btn btn-primary">
+        Szczegóły
+      </a>
+    </li>
+  </ul>
+</div>
 </body>
 </html>

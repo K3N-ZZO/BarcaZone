@@ -16,5 +16,6 @@ public class Comment {
     private Event event;
 
     private String author;
+
     private String content;
 }
