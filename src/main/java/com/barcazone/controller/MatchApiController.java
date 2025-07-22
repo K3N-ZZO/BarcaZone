@@ -58,7 +58,6 @@ public class MatchApiController {
 
         int value = "up".equals(type) ? 1 : -1;
         commentService.vote(commentId, principal.getName(), value);
-        // po zapisaniu głosu przekierowujemy z powrotem, żeby odświeżyć liczniki
         return "redirect:/matchDetails/" + matchId;
     }
 
