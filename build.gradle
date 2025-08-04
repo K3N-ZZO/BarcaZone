@@ -11,6 +11,10 @@ java {
 	toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
+springBoot {
+	mainClass = 'com.barcazone.BarcazoneApplication'
+}
+
 configurations {
 	compileOnly { extendsFrom annotationProcessor }
 }
