@@ -44,6 +44,10 @@
         <span th:text="${m.strHomeTeam}">Home</span> vs
         <span th:text="${m.strAwayTeam}">Away</span>
       </p>
+      <p>
+        <span th:text="${m.intHomeScore}">Home</span> :
+        <span th:text="${m.intAwayScore}">Away</span>
+      </p>
       <a th:href="@{/matchDetails/{id}(id=${m.id})}" class="btn btn-primary">
         Szczegóły
       </a>
