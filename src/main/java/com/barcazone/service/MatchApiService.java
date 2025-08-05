@@ -62,6 +62,7 @@ public class MatchApiService {
             e.setStrAwayTeam(dto.getStrAwayTeam());
             e.setIntHomeScore(dto.getIntHomeScore());
             e.setIntAwayScore(dto.getIntAwayScore());
+            e.setTimeEvent(dto.getStrTime());
             eventRepository.save(e);
         }
     }

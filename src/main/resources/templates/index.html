@@ -44,6 +44,15 @@
         <span th:text="${m.strHomeTeam}">Home</span> vs
         <span th:text="${m.strAwayTeam}">Away</span>
       </p>
+      <p th:text="${m.dateEvent} + (m.timeEvent != null ? ' ' + m.timeEvent : '')"></p>
+      <p class="countdown"
+         th:attr="data-datetime=
+         ${m.dateEvent}
+         + 'T'
+         + (m.timeEvent != null ? m.timeEvent : '00:00:00')
+         + 'Z'">
+        loading…
+      </p>
       <p>
         <span th:text="${m.intHomeScore}">Home</span> :
         <span th:text="${m.intAwayScore}">Away</span>
@@ -78,5 +87,28 @@
     </li>
   </ul>
 </div>
+<script>
+  function formatDiff(ms) {
+    if(ms <= 0) return 'Rozpoczęło się!';
+    const sec = Math.floor(ms/1000) % 60;
+    const min = Math.floor(ms/1000/60) % 60;
+    const hr  = Math.floor(ms/1000/60/60) % 24;
+    const days= Math.floor(ms/1000/60/60/24);
+    return (days>0 ? days+'d ' : '')
+            + hr+'h '+ min+'m '+ sec+'s';
+  }
+
+  function updateCountdowns() {
+    document.querySelectorAll('.countdown').forEach(el => {
+      const target = new Date(el.dataset.datetime);
+      const now    = new Date();
+      const diff   = target - now;
+      el.textContent = formatDiff(diff);
+    });
+  }
+
+  updateCountdowns();
+  setInterval(updateCountdowns, 1000);
+</script>
 </body>
 </html>

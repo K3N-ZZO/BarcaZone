@@ -25,6 +25,7 @@ public class Event {
     private String strAwayTeam;
     private String intHomeScore;
     private String intAwayScore;
+    private String timeEvent;
 
     @OneToMany(mappedBy = "event",
             cascade = CascadeType.ALL,
