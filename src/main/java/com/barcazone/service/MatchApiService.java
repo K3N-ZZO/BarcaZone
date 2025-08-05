@@ -13,9 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -54,7 +57,7 @@ public class MatchApiService {
             Event e = eventRepository.findByEventId(dto.getIdEvent())
                     .orElseGet(Event::new);
             e.setEventId(dto.getIdEvent());
-            e.setDateEvent(dto.getDateEvent());
+            e.setDateEvent(LocalDate.parse(dto.getDateEvent()));
             e.setStrHomeTeam(dto.getStrHomeTeam());
             e.setStrAwayTeam(dto.getStrAwayTeam());
             e.setIntHomeScore(dto.getIntHomeScore());
@@ -64,14 +67,20 @@ public class MatchApiService {
     }
 
     public List<Event> getRecentFromDb(int limit) {
-        return eventRepository
-                .findAllByOrderByDateEventDesc(PageRequest.of(0, limit))
-                .getContent();
+        LocalDate today = LocalDate.now();
+        return eventRepository.findAll().stream()
+                .filter(e -> e.getDateEvent().isBefore(today))
+                .sorted(Comparator.comparing(Event::getDateEvent).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 
     public List<Event> getUpcomingFromDb(int limit) {
-        Page<Event> page = eventRepository
-                .findAllByOrderByDateEventDesc(PageRequest.of(0, limit));
-        return page.getContent();
+        LocalDate today = LocalDate.now();
+        return eventRepository.findAll().stream()
+                .filter(e -> !e.getDateEvent().isBefore(today))
+                .sorted(Comparator.comparing(Event::getDateEvent))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 }

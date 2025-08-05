@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Event {
     private Long id;
 
     private String eventId;
-    private String dateEvent;
+    private LocalDate dateEvent;
     private String strHomeTeam;
     private String strAwayTeam;
     private String intHomeScore;

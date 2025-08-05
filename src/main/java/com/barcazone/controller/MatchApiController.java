@@ -27,8 +27,8 @@ public class MatchApiController {
 
     @GetMapping("/")
     public String showBarcaResults(Model model) {
-        List<Event> recent = matchApiService.getRecentFromDb(8);
-        List<Event> upcoming = matchApiService.getUpcomingFromDb(8);
+        List<Event> recent = matchApiService.getRecentFromDb(6);
+        List<Event> upcoming = matchApiService.getUpcomingFromDb(1);
         model.addAttribute("matches", recent);
         model.addAttribute("upcoming", upcoming);
         return "index";
