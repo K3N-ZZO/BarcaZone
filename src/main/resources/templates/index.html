@@ -44,11 +44,9 @@
         <span th:text="${m.strHomeTeam}">Home</span> vs
         <span th:text="${m.strAwayTeam}">Away</span>
       </p>
-      <p th:text="${m.dateEvent} + (m.timeEvent != null ? ' ' + m.timeEvent : '')"></p>
       <p class="countdown"
          th:attr="data-datetime=
-         ${m.dateEvent}
-         + 'T'
+         ${m.dateEvent} + 'T'
          + (m.timeEvent != null ? m.timeEvent : '00:00:00')
          + 'Z'">
         loading…
