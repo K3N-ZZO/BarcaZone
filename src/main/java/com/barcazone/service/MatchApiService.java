@@ -7,6 +7,8 @@ import com.barcazone.repository.EventRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -62,10 +64,14 @@ public class MatchApiService {
     }
 
     public List<Event> getRecentFromDb(int limit) {
-        return eventRepository.findTopNByOrderByDateEventDesc(limit);
+        return eventRepository
+                .findAllByOrderByDateEventDesc(PageRequest.of(0, limit))
+                .getContent();
     }
 
     public List<Event> getUpcomingFromDb(int limit) {
-        return eventRepository.findTopNByOrderByDateEventAsc(limit);
+        Page<Event> page = eventRepository
+                .findAllByOrderByDateEventDesc(PageRequest.of(0, limit));
+        return page.getContent();
     }
 }
