@@ -46,9 +46,7 @@
       </p>
 
       <p class="countdown"
-         th:attr="data-datetime=${m.dateEvent + 'T'
-           + (m.timeEvent != null ? m.timeEvent : '00:00:00')}"
-      >
+         th:attr="data-datetime=${m.isoDateTime}">
         loading…
       </p>
 

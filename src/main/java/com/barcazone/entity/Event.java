@@ -32,4 +32,14 @@ public class Event {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
+
+    @Transient
+    public String getIsoDateTime() {
+        String time = (timeEvent != null && !timeEvent.isBlank()) ? timeEvent : "00:00:00";
+
+        return dateEvent.toString()
+                + "T"
+                + time
+                + "Z";
+    }
 }
