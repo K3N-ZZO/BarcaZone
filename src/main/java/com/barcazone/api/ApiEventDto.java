@@ -22,4 +22,7 @@ public class ApiEventDto {
 
     @JsonProperty("intAwayScore")
     private String intAwayScore;
+
+    @JsonProperty("strTime")
+    private String strTime;
 }
