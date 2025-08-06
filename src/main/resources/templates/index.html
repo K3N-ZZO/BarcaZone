@@ -12,12 +12,13 @@
   <div class ="barcaZone">
     <h3>BarcaZone</h3>
   </div>
+  <img class="logo" src = "../images/logo.png" alt="logo strony barca zone">
   <div class="container">
     <a th:href="@{/}">Home</a>
     <!-- NIE masz konta -->
     <div sec:authorize="!isAuthenticated()">
-      <a th:href="@{/login}">Log in</a>
-      <a th:href="@{/register}">Register</a>
+      <a th:href="@{/login}">Zaloguj się</a>
+      <a th:href="@{/register}">Zarejestuj się</a>
     </div>
     <!-- Jesteś zalogowany -->
     <div sec:authorize="isAuthenticated()">

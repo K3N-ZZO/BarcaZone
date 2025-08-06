@@ -33,6 +33,11 @@ p.score {
     background: #fff;
 }
 
+img.logo {
+    width: 400px;
+    height: 200px;
+}
+
 /* ================== CONTAINER ================== */
 .container {
     max-width: 960px;
