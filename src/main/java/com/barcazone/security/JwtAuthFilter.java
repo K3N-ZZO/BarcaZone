@@ -1,5 +1,6 @@
 package com.barcazone.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
@@ -16,22 +18,36 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtService jwt; private final UserDetailsService uds;
 
-    @Override protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+    private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws ServletException, IOException {
-        String h=req.getHeader("Authorization");
-        if(h!=null && h.startsWith("Bearer ")){
-            String token=h.substring(7);
-            try{
-                String username=jwt.parseUsername(token);
-                if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-                    UserDetails ud=uds.loadUserByUsername(username);
-                    var auth=new UsernamePasswordAuthenticationToken(ud,null,ud.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+        String auth = req.getHeader("Authorization");
+        if (auth != null && auth.startsWith("Bearer ")) {
+            String token = auth.substring(7);
+            try {
+                String username = jwtService.parseUsername(token);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails user = userDetailsService.loadUserByUsername(username);
+                    var authToken = new UsernamePasswordAuthenticationToken(
+                            user, null, user.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            }catch(Exception ignored){}
+            } catch (JwtException ignored) {
+                // opcjonalnie zaloguj
+            }
         }
-        chain.doFilter(req,res);
+        chain.doFilter(req, res);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // filtruj tylko API (np. /api/**), a puść front/Thymeleaf bez JWT
+        String path = request.getRequestURI();
+        return !path.startsWith("/api/");
     }
 }
