@@ -1,60 +1,47 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group   = 'com.barcazone'
+group = 'com.barcazone'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain { languageVersion = JavaLanguageVersion.of(21) }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
-jar {
-	enabled = false
+repositories {
+	mavenCentral()
 }
-
-bootJar {
-	archiveFileName = 'app.jar'
-	mainClass.set('com.barcazone.BarcazoneApplication')
-}
-
-springBoot {
-	mainClass = 'com.barcazone.BarcazoneApplication'
-}
-
-configurations {
-	compileOnly { extendsFrom annotationProcessor }
-}
-
-repositories { mavenCentral() }
 
 dependencies {
-	// Spring
+	// Web + JPA + MySQL
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.3.RELEASE'
+	implementation 'com.mysql:mysql-connector-j'
 
-	// MySQL
-	runtimeOnly   'com.mysql:mysql-connector-j:8.4.0'
+	// Security + JWT
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly  'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly  'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// Lombok
-	compileOnly        'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// DevTools
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-	// Testy
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly    'org.junit.platform:junit-platform-launcher'
-	testImplementation 'org.springframework.security:spring-security-test'
 }
 
-tasks.named('test') {
+tasks.test {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
 }
