@@ -51,22 +51,31 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(c -> {})
+                .cors(c -> {}) // mamy CorsFilter niżej
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // statyki i favicon
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/login", "/register", "/matchDetails/**").permitAll()
-                        .requestMatchers("/favicon.ico", "/actuator/health").permitAll()
+                        .requestMatchers("/css/**","/js/**","/images/**","/favicon.ico").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        // PUBLICZNE STRONY (GET)
+                        .requestMatchers(HttpMethod.GET, "/", "/index", "/login", "/register", "/matchDetails/**").permitAll()
 
+                        // HEALTH – dla Railway
+                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+
+                        // API: publiczne odczyty
                         .requestMatchers(HttpMethod.GET, "/api/v1/matches/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/matches/*/comments").permitAll()
 
-                        .requestMatchers(HttpMethod.GET,  "/api/v1/matches/*/comments").permitAll()
+                        // API: logowanie/rejestracja – publiczne
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // API: modyfikacje – wymagają JWT
                         .requestMatchers(HttpMethod.POST, "/api/v1/matches/*/comments").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/comments/*/vote").authenticated()
 
-
+                        // reszta – wymaga JWT
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -74,6 +83,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
 
     @Bean

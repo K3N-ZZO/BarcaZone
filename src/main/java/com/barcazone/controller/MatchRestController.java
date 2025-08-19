@@ -4,7 +4,7 @@ import com.barcazone.dto.EventDto;
 import com.barcazone.entity.Event;
 import com.barcazone.repository.EventRepository;
 import com.barcazone.service.MatchApiService;
-import com.barcazone.api.ApiMapper; // Twój mapper do DTO
+import com.barcazone.api.ApiMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
