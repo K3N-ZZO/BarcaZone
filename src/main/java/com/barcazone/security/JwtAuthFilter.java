@@ -38,7 +38,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (JwtException ignored) {
-                // opcjonalnie zaloguj
             }
         }
         chain.doFilter(req, res);
@@ -46,7 +45,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // filtruj tylko API (np. /api/**), a puść front/Thymeleaf bez JWT
         String path = request.getRequestURI();
         return !path.startsWith("/api/");
     }

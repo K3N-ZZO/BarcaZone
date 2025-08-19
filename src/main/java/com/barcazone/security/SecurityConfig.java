@@ -48,7 +48,6 @@ public class SecurityConfig {
         return cfg.getAuthenticationManager();
     }
 
-    /** API: /api/** – stateless + JWT */
     @Bean
     @Order(1)
     SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
@@ -68,7 +67,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** WEB: wszystko inne – bez JWT, publiczne */
     @Bean
     @Order(2)
     SecurityFilterChain webChain(HttpSecurity http) throws Exception {

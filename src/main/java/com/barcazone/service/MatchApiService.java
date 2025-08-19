@@ -40,7 +40,7 @@ public class MatchApiService {
     }
 
     /** Zadanie CRON – nic nie zwraca; tylko wywołuje powyższe */
-    @Scheduled(cron = "0 0 * * * *") // co godzinę; ustaw jak chcesz
+    @Scheduled(cron = "0 0 * * * *")
     public void runSyncJob() {
         fetchRecentMatches();
         fetchUpcomingMatches();
