@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -43,51 +44,48 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
     }
 
+    /** API: /api/** – stateless + JWT */
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher("/api/**")
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(c -> {}) // mamy CorsFilter niżej
+                .cors(c -> {})
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // statyki i favicon
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/css/**","/js/**","/images/**","/favicon.ico").permitAll()
-
-                        // PUBLICZNE STRONY (GET)
-                        .requestMatchers(HttpMethod.GET, "/", "/index", "/login", "/register", "/matchDetails/**").permitAll()
-
-                        // HEALTH – dla Railway
-                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-
-                        // API: publiczne odczyty
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/matches/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/matches/*/comments").permitAll()
-
-                        // API: logowanie/rejestracja – publiczne
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-
-                        // API: modyfikacje – wymagają JWT
-                        .requestMatchers(HttpMethod.POST, "/api/v1/matches/*/comments").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/comments/*/vote").authenticated()
-
-                        // reszta – wymaga JWT
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
-
+    /** WEB: wszystko inne – bez JWT, publiczne */
+    @Bean
+    @Order(2)
+    SecurityFilterChain webChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/css/**","/js/**","/images/**","/favicon.ico").permitAll()
+                        .requestMatchers("/", "/index", "/login", "/register", "/matchDetails/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .anyRequest().permitAll()
+                );
+        return http.build();
+    }
 
     @Bean
-    public CorsFilter corsFilter() {
+    CorsFilter corsFilter() {
         var cfg = new CorsConfiguration();
         cfg.setAllowedOriginPatterns(List.of("*"));
         cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
