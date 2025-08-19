@@ -30,7 +30,11 @@ public class AuthRestController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req){
         if(users.findByUsername(req.getUsername()).isPresent()) return ResponseEntity.badRequest().body("Username taken");
-        Role r = roles.findByName("ROLE_USER").orElseGet(() -> roles.save(new Role(null,"ROLE_USER")));
+        Role r = roles.findByName("ROLE_USER").orElseGet(() -> {
+            Role role = new Role();
+            role.setName("ROLE_USER");
+            return roles.save(role);
+        });
         User u=new User(); u.setUsername(req.getUsername()); u.setPassword(pe.encode(req.getPassword())); u.getRoles().add(r);
         users.save(u);
         return ResponseEntity.ok().build();
